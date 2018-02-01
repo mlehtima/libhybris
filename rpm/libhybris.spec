@@ -322,8 +322,8 @@ rm %{buildroot}/%{_libdir}/*.la %{buildroot}/%{_libdir}/libhybris/*.la
 %{_bindir}/setprop
 %{_libdir}/libhybris/linker/*.la
 %{_libdir}/libhybris/linker/*.so
-%{_libdir}/libwifi.so.1
-%{_libdir}/libwifi.so.1.0.0
+#%{_libdir}/libwifi.so.1
+#%{_libdir}/libwifi.so.1.0.0
 
 %files devel
 %defattr(-,root,root,-)
@@ -341,8 +341,8 @@ rm %{buildroot}/%{_libdir}/*.la %{buildroot}/%{_libdir}/libhybris/*.la
 %{_includedir}/hybris/surface_flinger/surface_flinger_compatibility_layer.h
 %{_includedir}/hybris/ui/ui_compatibility_layer.h
 %{_includedir}/hybris/media/*.h
-%{_libdir}/libwifi.so
-%{_libdir}/pkgconfig/libwifi.pc
+#%{_libdir}/libwifi.so
+#%{_libdir}/pkgconfig/libwifi.pc
 
 %files libEGL
 %defattr(-,root,root,-)
@@ -463,7 +463,7 @@ rm %{buildroot}/%{_libdir}/*.la %{buildroot}/%{_libdir}/libhybris/*.la
 %{_bindir}/test_nfc
 %{_bindir}/test_sensors
 %{_bindir}/test_vibrator
-%{_bindir}/test_wifi
+#%{_bindir}/test_wifi
 
 %files tests-upstream
 %defattr(-,root,root,-)

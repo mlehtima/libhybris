@@ -11,8 +11,11 @@ bin_PROGRAMS = \
 	test_vibrator \
 	test_media \
 	test_recorder \
-	test_gps \
-	test_wifi
+	test_gps
+
+if !HAS_ANDROID_8_0_0
+bin_PROGRAMS += test_wifi
+endif
 
 if HAS_ANDROID_4_2_0
 bin_PROGRAMS += test_hwcomposer
