@@ -89,27 +89,6 @@ Provides: libGLESv2-devel
 %description libGLESv2-devel
 %{summary}.
 
-%package libGLESv3
-Summary: OpenGL ES 2.0 for %{name}
-Requires: %{name} = %{version}-%{release}
-Requires(post): /sbin/ldconfig
-Requires(postun): /sbin/ldconfig
-Provides: libGLESv3
-Provides: libGLESv3.so.3
-
-%description libGLESv3
-%{summary}.
-
-%package libGLESv3-devel
-Summary: OpenGL ES 2.0 development library for %{name}
-Requires: %{name} = %{version}-%{release}
-Requires: %{name}-libGLESv3 = %{version}-%{release}
-Requires: %{name}-devel = %{version}-%{release}
-Provides: libGLESv3-devel
-
-%description libGLESv3-devel
-%{summary}.
-
 %package libOpenCL
 Summary: OpenCL for %{name}
 Requires: %{name} = %{version}-%{release}
@@ -269,7 +248,6 @@ Summary: Tests for %{name}
 Requires: %{name} = %{version}-%{release}
 Requires: %{name}-libEGL = %{version}-%{release}
 Requires: %{name}-libGLESv2 = %{version}-%{release}
-Requires: %{name}-libGLESv3 = %{version}-%{release}
 Requires: %{name}-libhardware = %{version}-%{release}
 Requires: %{name}-libsync = %{version}-%{release}
 Requires: %{name}-libvibrator = %{version}-%{release}
@@ -368,9 +346,6 @@ install -m0644 AUTHORS %{buildroot}%{_docdir}/%{name}-%{version}
 
 %post libGLESv2 -p /sbin/ldconfig
 %postun libGLESv2 -p /sbin/ldconfig
-
-%post libGLESv3 -p /sbin/ldconfig
-%postun libGLESv3 -p /sbin/ldconfig
 
 %post libOpenCL -p /sbin/ldconfig
 %postun libOpenCL -p /sbin/ldconfig
@@ -478,18 +453,9 @@ install -m0644 AUTHORS %{buildroot}%{_docdir}/%{name}-%{version}
 %files libGLESv2-devel
 %defattr(-,root,root,-)
 %{_includedir}/GLES2
+%{_includedir}/GLES3
 %{_libdir}/libGLESv2.so
 %{_libdir}/pkgconfig/glesv2.pc
-
-%files libGLESv3
-%defattr(-,root,root,-)
-%{_libdir}/libGLESv3.so.3*
-
-%files libGLESv3-devel
-%defattr(-,root,root,-)
-%{_includedir}/GLES2/*.h
-%{_libdir}/libGLESv3.so
-%{_libdir}/pkgconfig/glesv3.pc
 
 %files libOpenCL
 %defattr(-,root,root,-)
