@@ -7,6 +7,7 @@ URL:       https://github.com/libhybris/libhybris
 Source:    %{name}-%{version}.tar.bz2
 BuildRequires: libtool
 BuildRequires: pkgconfig(wayland-client)
+BuildRequires: vulkan-headers
 # When droid-hal-ha builds for a specific HA it should provide
 # droid-hal-devel via droid-hal-%%{device}-devel package
 BuildRequires: droid-hal-devel
@@ -236,6 +237,17 @@ Provides: libsf-devel
 %description libsf-devel
 %{summary}.
 
+%package libvulkan
+Summary: Vulkan support helpers for %{name}
+Requires(post): /sbin/ldconfig
+Requires(postun): /sbin/ldconfig
+Requires: %{name} = %{version}-%{release}
+Provides: vulkan
+Obsoletes: vulkan-loader
+
+%description libvulkan
+%{summary}.
+
 %package tests
 Summary: Tests for %{name}
 Requires: %{name} = %{version}-%{release}
@@ -257,6 +269,7 @@ Requires: %{name}-libEGL = %{version}-%{release}
 Requires: %{name}-libGLESv2 = %{version}-%{release}
 Requires: %{name}-libhardware = %{version}-%{release}
 Requires: %{name}-libsync = %{version}-%{release}
+Requires: %{name}-libvulkan = %{version}-%{release}
 
 %description tests-upstream
 %{summary}.
@@ -285,10 +298,10 @@ Requires:  %{name} = %{version}-%{release}
 cd hybris
 %reconfigure \
   --enable-wayland \
-  %{?qa_stage_devel:--enable-debug} \
-  %{?qa_stage_devel:--enable-trace} \
+  --enable-debug \
+  --enable-trace \
 %ifnarch %{ix86}
-  %{?qa_stage_devel:--enable-arm-tracing} \
+  --enable-arm-tracing \
 %endif
   --enable-property-cache \
 %ifarch %{arm}
@@ -303,7 +316,9 @@ cd hybris
 %else
   --with-default-hybris-ld-library-path=/usr/libexec/droid-hybris/system/lib:/vendor/lib:/system/lib:/odm/lib \
 %endif
-  --enable-silent-rules
+  --enable-silent-rules \
+  --enable-debug \
+  --enable-trace
 
 %make_build
 
@@ -313,6 +328,8 @@ make install DESTDIR=$RPM_BUILD_ROOT
 
 # Remove the static libraries.
 rm -f %{buildroot}/%{_libdir}/*.la %{buildroot}/%{_libdir}/libhybris/*.la
+# Remove unneeded library symlink
+rm -f %{buildroot}/%{_libdir}/libhybris-vulkanplatformcommon.so
 
 mkdir -p %{buildroot}%{_docdir}/%{name}-%{version}
 install -m0644 AUTHORS %{buildroot}%{_docdir}/%{name}-%{version}
@@ -350,6 +367,9 @@ install -m0644 AUTHORS %{buildroot}%{_docdir}/%{name}-%{version}
 %post libsf -p /sbin/ldconfig
 %postun libsf -p /sbin/ldconfig
 
+%post libvulkan -p /sbin/ldconfig
+%postun libvulkan -p /sbin/ldconfig
+
 %post tests-upstream -p /sbin/ldconfig
 %postun tests-upstream -p /sbin/ldconfig
 
@@ -361,6 +381,7 @@ install -m0644 AUTHORS %{buildroot}%{_docdir}/%{name}-%{version}
 %license hybris/COPYING
 %dir %{_libdir}/libhybris
 %{_libdir}/libhybris-common.so.*
+%{_libdir}/libhybris-platformcommon.so.*
 %{_libdir}/libandroid-properties.so.*
 %{_libdir}/libgralloc.so.*
 %{_libdir}/libhwc2.so.*
@@ -377,7 +398,9 @@ install -m0644 AUTHORS %{buildroot}%{_docdir}/%{name}-%{version}
 %{_includedir}/hybris/properties
 %{_includedir}/hybris/dlfcn
 %{_includedir}/hybris/common
+%{_includedir}/hybris/platformcommon
 %{_libdir}/libhybris-common.so
+%{_libdir}/libhybris-platformcommon.so
 %{_libdir}/pkgconfig/libgralloc.pc
 %{_libdir}/libandroid-properties.so
 %{_libdir}/pkgconfig/libandroid-properties.pc
@@ -502,6 +525,14 @@ install -m0644 AUTHORS %{buildroot}%{_docdir}/%{name}-%{version}
 %{_libdir}/libsf.so
 %{_libdir}/pkgconfig/libsf.pc
 
+%files libvulkan
+%defattr(-,root,root-)
+%{_libdir}/libvulkan.so*
+%{_libdir}/libhybris-vulkanplatformcommon.so.*
+%{_libdir}/libhybris/vulkanplatform_*.so
+#{_libdir}/libhybris/vulkanplatform_null.so
+#{_libdir}/libhybris/vulkanplatform_wayland.so
+
 %files tests
 %defattr(-,root,root,-)
 %{_bindir}/test_audio
@@ -517,6 +548,7 @@ install -m0644 AUTHORS %{buildroot}%{_docdir}/%{name}-%{version}
 %{_bindir}/test_opencl
 %{_bindir}/test_sensors
 %{_bindir}/test_vibrator
+%{_bindir}/test_vulkan
 %{_bindir}/test_wifi
 
 %files tests-upstream
