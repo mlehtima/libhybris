@@ -288,7 +288,7 @@ cd hybris
   %{?qa_stage_devel:--enable-debug} \
   %{?qa_stage_devel:--enable-trace} \
 %ifarch %{arm}
-  %{?qa_stage_devel:--enable-arm-tracing} \
+  --enable-arm-tracing \
 %endif
   --enable-property-cache \
 %ifarch %{arm}
