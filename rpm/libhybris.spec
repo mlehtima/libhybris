@@ -286,7 +286,7 @@ cd hybris
 %reconfigure \
   --enable-wayland \
   %{?qa_stage_devel:--enable-debug} \
-  %{?qa_stage_devel:--enable-trace} \
+  --enable-trace \
 %ifarch %{arm}
   --enable-arm-tracing \
 %endif
