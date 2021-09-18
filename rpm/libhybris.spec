@@ -242,7 +242,9 @@ Summary: Vulkan support helpers for %{name}
 Requires(post): /sbin/ldconfig
 Requires(postun): /sbin/ldconfig
 Requires: %{name} = %{version}-%{release}
-Provides: libvulkan
+Requires: vulkan
+#Provides: libvulkan
+Provides: vulkan-drivers
 
 %description libvulkan
 %{summary}.
@@ -535,20 +537,17 @@ install -m0644 AUTHORS %{buildroot}%{_docdir}/%{name}-%{version}
 
 %files libvulkan
 %defattr(-,root,root-)
-%{_libdir}/libvulkan.so*
+%{_libdir}/libvulkan*.so*
 %{_libdir}/libhybris-vulkanplatformcommon.so.*
 %{_libdir}/libhybris/vulkanplatform_*.so
-#{_libdir}/libhybris/vulkanplatform_null.so
-#{_libdir}/libhybris/vulkanplatform_wayland.so
 
 %files libvulkan-devel
 %defattr(-,root,root,-)
-%{_includedir}/vulkan
-%{_includedir}/hybris/vulkanplatformcommon
+#{_includedir}/vulkan
+#{_includedir}/hybris/vulkanplatformcommon
 #{_libdir}/libvulkan.so
 %{_libdir}/libhybris-vulkanplatformcommon.so
-%{_libdir}/pkgconfig/vulkan.pc
-%{_libdir}/pkgconfig/hybris-vulkan-platform.pc
+#{_libdir}/pkgconfig/vulkan.pc
 
 %files tests
 %defattr(-,root,root,-)
