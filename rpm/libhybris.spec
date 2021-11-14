@@ -548,7 +548,7 @@ install -m0644 AUTHORS %{buildroot}%{_docdir}/%{name}-%{version}
 %{_bindir}/test_opencl
 %{_bindir}/test_sensors
 %{_bindir}/test_vibrator
-#{_bindir}/test_vulkan
+%{_bindir}/test_vulkan
 %{_bindir}/test_wifi
 
 %files tests-upstream
