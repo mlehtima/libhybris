@@ -8,6 +8,8 @@
 %bcond_with debug
 #%%end
 
+%global _vpath_srcdir hybris
+
 Name:      libhybris
 Version:   0.0.0
 Release:   1%{?dist}
@@ -15,7 +17,7 @@ Summary:   Utilize Bionic-based HW adaptations on glibc systems
 License:   ASL 2.0 and BSD and ISC and LGPLv2 and MIT
 URL:       https://github.com/mer-hybris/libhybris
 Source:    %{name}-%{version}.tar.bz2
-BuildRequires: libtool
+BuildRequires: meson
 BuildRequires: pkgconfig(wayland-client)
 BuildRequires: vulkan-headers
 # When droid-hal-ha builds for a specific HA it should provide
@@ -287,40 +289,40 @@ Requires:  %{name} = %{version}-%{release}
 %autosetup -n %{name}-%{version}/%{name}
 
 %build
-cd hybris
-%reconfigure \
-  --enable-wayland \
-  %{?with_debug:--enable-debug} \
-  %{?with_trace:--enable-trace} \
-%ifnarch %{ix86}
-  %{?with_arm_tracing:--enable-arm-tracing} \
-%endif
-  --enable-property-cache \
+%meson \
 %ifarch %{arm}
-  --enable-arch=arm \
+  -Darch=arm \
 %endif
 %ifarch %{ix86}
-  --enable-arch=x86 \
+  -Darch=x86 \
 %endif
 %ifarch aarch64
-  --enable-arch=arm64 \
+  -Darch=arm64 \
 %endif
-  --with-default-hybris-ld-library-path=/usr/libexec/droid-hybris/system/%{_lib}:/system/%{_lib}:/odm/%{_lib}:/vendor/%{_lib} \
-  --enable-silent-rules
+%ifarch x86_64
+  -Darch=x86_64 \
+%endif
+  -Ddefault_hybris_ld_library_path=/usr/libexec/droid-hybris/system/%{_lib}:/system/%{_lib}:/odm/%{_lib}:/vendor/%{_lib} \
+  %{?with_debug:-Denable_debug=true} \
+  %{?with_trace:-Denable_trace=true} \
+%ifnarch %{ix86}
+  %{?with_arm_tracing:-Darm_tracing=true} \
+%endif
+  -Dproperty_cache=true \
+  -Dwayland=true
 
-%make_build
+%meson_build
 
 %install
-cd hybris
-%make_install
+%meson_install
 
 # Remove the static libraries.
-rm -f %{buildroot}/%{_libdir}/*.la %{buildroot}/%{_libdir}/libhybris/*.la
+rm -f %{buildroot}/%{_libdir}/*.a %{buildroot}/%{_libdir}/libhybris/*.a %{buildroot}/%{_libdir}/libhybris/linker/*.a
 # Remove unneeded library symlink
 rm -f %{buildroot}/%{_libdir}/libhybris-vulkanplatformcommon.so %{buildroot}/%{_libdir}/libvulkan.so
 
 mkdir -p %{buildroot}%{_docdir}/%{name}-%{version}
-install -m0644 AUTHORS %{buildroot}%{_docdir}/%{name}-%{version}
+install -m0644 hybris/AUTHORS %{buildroot}%{_docdir}/%{name}-%{version}
 
 # For releases before Sailfish Os 4.6.0
 find -H "$RPM_BUILD_ROOT" -name "*.la" -a \( -type f -o -type l \) -delete
@@ -406,7 +408,6 @@ find -H "$RPM_BUILD_ROOT" -name "*.la" -a \( -type f -o -type l \) -delete
 %{_libdir}/pkgconfig/libhwc2.pc
 
 %files libEGL
-%defattr(-,root,root,-)
 %{_libdir}/libEGL.so.*
 %{_libdir}/libhybris-eglplatformcommon.so.*
 %{_libdir}/libhybris/eglplatform_fbdev.so
@@ -531,5 +532,4 @@ find -H "$RPM_BUILD_ROOT" -name "*.la" -a \( -type f -o -type l \) -delete
 %{_libdir}/pkgconfig/libmedia.pc
 
 %files doc
-%defattr(-,root,root,-)
 %{_docdir}/%{name}-%{version}
